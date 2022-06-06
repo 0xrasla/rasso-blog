@@ -2,7 +2,8 @@ import { ApolloServer } from 'apollo-server-micro'
 import "reflect-metadata"
 import { buildSchema, Field, ID, ObjectType, Query, Resolver } from "type-graphql"
 import type { NextApiRequest, NextApiResponse } from 'next'
-
+import cors from "micro-cors"
+import { send } from 'micro'
 @ObjectType()
 export class User {
 
@@ -31,11 +32,20 @@ const schema = await buildSchema({
 })
 
 
-const server = new ApolloServer({ schema, csrfPrevention: true })
+const server = new ApolloServer({ schema: schema, csrfPrevention: true })
+const startServer = server.start()
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    await server.start();
-    await server.createHandler({ path: '/api/graphql' })(req, res)
+    res.setHeader("Access-Control-Allow-Origin", "*")
+    res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+
+    if (req.method === "OPTIONS") {
+        res.end()
+        return false;
+    }
+
+    await startServer;
+    await server.createHandler({ path: "/api/graphql" })(req, res)
 }
 
 export const config = {
