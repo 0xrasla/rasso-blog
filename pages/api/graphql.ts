@@ -1,55 +1,33 @@
-import { ApolloServer } from 'apollo-server-micro'
-import "reflect-metadata"
-import { buildSchema, Field, ID, ObjectType, Query, Resolver } from "type-graphql"
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { ApolloServer, gql } from "apollo-server-micro"
+import { typeDefs } from "../../src/graphql/schemas/schema";
+import { userResolver } from "../../src/graphql/resolvers";
+import { NextApiRequest, NextApiResponse } from "next";
 import cors from "micro-cors"
-import { send } from 'micro'
-@ObjectType()
-export class User {
 
-    @Field(() => ID)
-    id!: string
-
-    @Field()
-    name!: string
-}
-
-@Resolver(() => User)
-export class UserResolver {
-
-    @Query(() => User)
-    user(): User {
-        return {
-            id: "1",
-            name: "John Doe"
-        }
-    }
-
-}
-
-const schema = await buildSchema({
-    resolvers: [UserResolver]
-})
-
-
-const server = new ApolloServer({ schema: schema, csrfPrevention: true })
+const server = new ApolloServer({
+    typeDefs,
+    resolvers: [userResolver],
+    csrfPrevention: true
+});
+const Cors = cors()
 const startServer = server.start()
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    res.setHeader("Access-Control-Allow-Origin", "*")
-    res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-
-    if (req.method === "OPTIONS") {
-        res.end()
-        return false;
-    }
+export default Cors(async (req, res) => {
 
     await startServer;
-    await server.createHandler({ path: "/api/graphql" })(req, res)
-}
+
+    if (req.method == "OPTIONS") {
+        res.end()
+        return false
+    }
+
+    return server.createHandler({
+        path: "/api/graphql"
+    })(req, res)
+})
 
 export const config = {
     api: {
-        bodyParser: false
+        bodyParser: false,
     }
 }
