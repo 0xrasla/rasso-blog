@@ -1,16 +1,18 @@
+import { ObjectType } from '@nestjs/graphql';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
+@ObjectType()
 export class Blog {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    firstName: string;
+    @Column({})
+    title: string;
 
-    @Column()
-    lastName: string;
+    @Column({})
+    author: string;
 
-    @Column({ default: true })
-    isActive: boolean;
+    @Column({})
+    likeCount: number;
 }

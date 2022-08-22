@@ -9,13 +9,4 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-
-  @Get("/d")
-  getAllUsers(): any[] {
-    return [
-      {
-
-      }
-    ]
-  }
 }

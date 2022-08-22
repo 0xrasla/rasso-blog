@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { BlogModule } from './blog/blog.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Blog } from "./blog/blog.entity"
+import { Author } from './author/author.entity';
+import { AuthorModule } from './author/author.module';
 @Module({
   imports: [
     BlogModule,
+    AuthorModule,
     ConfigModule.forRoot({
     }),
     TypeOrmModule.forRoot({
@@ -19,15 +20,9 @@ import { Blog } from "./blog/blog.entity"
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [Blog],
+      entities: [Blog, Author],
       synchronize: true
     }),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      debug: false,
-      playground: true,
-      autoSchemaFile: "schema.gql"
-    })
   ],
   controllers: [AppController],
   providers: [AppService],
