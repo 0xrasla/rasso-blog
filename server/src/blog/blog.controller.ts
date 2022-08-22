@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { BlogService } from './blog.service';
 
 @Controller('blog')
@@ -8,5 +8,10 @@ export class BlogController {
     @Get("/allblogs")
     allblogs() {
         return this.blogService.getAllBlogs()
+    }
+
+    @Get("/:id")
+    getSingleBlog(@Param() params) {
+
     }
 }

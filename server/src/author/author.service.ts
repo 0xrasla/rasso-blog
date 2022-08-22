@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Author } from "./author.entity";
-import { createAuthor } from "./dto/author.dto";
+import { createAuthor, updateAuthor } from "./dto/author.dto";
 
 @Injectable()
 export class AuthorService {
@@ -34,5 +34,55 @@ export class AuthorService {
 
         await this.authorRepository.save(newAuthor)
         return { newAuthor, status: "Created" }
+    }
+
+    async updateAuthor(id: number, updateAuthorDto: updateAuthor) {
+        const {
+            firstName, isActive, lastName
+        } = updateAuthorDto
+
+        try {
+            const authortoUpdate = await this.authorRepository.findOne({
+                where: {
+                    id: id
+                }
+            })
+
+            if (!authortoUpdate) return { message: "Author Not Found", ok: false }
+
+            if (firstName) authortoUpdate.firstName = firstName
+            if (isActive) authortoUpdate.isActive = isActive
+            if (lastName) authortoUpdate.lastName = lastName
+
+            await this.authorRepository.save(authortoUpdate)
+
+            return {
+                message: "Author Updated",
+                ok: true
+            }
+
+        } catch (e) {
+            return new Error(e.message)
+        }
+
+    }
+
+    async deleteAuthor(id: number) {
+        try {
+            const authorToDelete = await this.authorRepository.findOne({ where: { id } })
+            if (!authorToDelete) return { message: "Author Not Found", ok: false }
+
+            this.authorRepository.delete(id)
+
+            return {
+                message: "Author Deleted Successfully",
+                ok: true
+            }
+        } catch (e: any) {
+            return {
+                message: e.message,
+                ok: false
+            }
+        }
     }
 }
