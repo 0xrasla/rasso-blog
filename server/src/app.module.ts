@@ -7,11 +7,20 @@ import { ConfigModule } from '@nestjs/config';
 import { Blog } from "./blog/blog.entity"
 import { Author } from './author/author.entity';
 import { AuthorModule } from './author/author.module';
+
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+
 @Module({
   imports: [
     BlogModule,
     AuthorModule,
     ConfigModule.forRoot({
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: 'schema.gql',
+      debug: true
     }),
     TypeOrmModule.forRoot({
       type: "postgres",

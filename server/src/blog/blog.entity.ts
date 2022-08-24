@@ -7,12 +7,12 @@ export class Blog {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({})
+    @Column()
     title: string;
 
-    @Column({})
+    @Column()
     author: string;
 
-    @Column({})
+    @Column()
     likeCount: number;
 }
